@@ -127,4 +127,33 @@ public class DataRetreiver {
         }
         return null;
     }
+    List<Dish> findDishByIngredientName(String IngredientName) throws SQLException {
+        List<Dish> dishes = new ArrayList<>();
+            String sqlIngredient="select id from ingredient where name = ?";
+            Connection conn = db.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sqlIngredient);
+            ps.setString(1, IngredientName);
+            ResultSet rs = ps.executeQuery();
+            Dish dish = null;
+
+            if (rs.next()) {
+                int idIngredient=rs.getInt("id");
+                String sql2="select di.id_dish,d.id,d.name,d.price,d.dish_type from dish d inner join dishIngredient di on d.id = di.id_ingredient where d.id = ?";
+                PreparedStatement ps2 = conn.prepareStatement(sql2);
+                ps2.setInt(1, idIngredient);
+                ResultSet rs2 = ps2.executeQuery();
+                while (rs2.next()) {
+                    dish =new Dish(
+                            rs2.getInt("id"),
+                            rs2.getString("name"),
+                            DishTypeEnum.valueOf(rs2.getString("dish_type")),
+                            new ArrayList<>(),
+                            rs2.getDouble("price")
+                    );
+                    dishes.add(dish);
+                }
+                return dishes;
+            }
+        return dishes;
+    }
 }

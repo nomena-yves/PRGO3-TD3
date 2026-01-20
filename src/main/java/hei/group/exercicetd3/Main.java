@@ -11,8 +11,9 @@ public class Main {
         Dish steakBoeuf=new Dish(8,"steak",MAIN,null,2000.00);
         try{
             //System.out.println(d.findDishById(1));
-            System.out.println(d.findByIngredient(2,3));
-            System.out.println(d.saveDish(steakBoeuf));
+            //System.out.println(d.findByIngredient(2,3));
+            //System.out.println(d.saveDish(steakBoeuf));
+            System.out.println(d.findDishByIngredientName("Chocolat"));
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }

@@ -159,6 +159,33 @@ public class DataRetreiver {
     List<Ingredient> findIngredientByCretaria(String ingredientName,CategoryEnum category,String NameDish,int page,int size) throws SQLException {
         Connection conn = db.getConnection();
         int offset = (page - 1) * size;
-        String sql=" select d.id,d.name,d.price,d.dish_type from dish d inner join ingredient i where i.name=? and i.category=? and d.id=? limit ? offset ?";
+        String sql="select i.id,i.name,i.categpry,i.price from ingredient i inner join dishIngredient d on i.id=d.id_ingredient where i.name like ? and d.id_ingredient =? and category=?::ingredient_type limit ? offset ?";
+        String sql2="select di.id_ingredient,d.id from dish d inner join dishIngredient di on di.id_dish=d.id where d.name=?";
+        PreparedStatement ps2 = conn.prepareStatement(sql2);
+        ps2.setString(1, NameDish);
+        ResultSet rs2 = ps2.executeQuery();
+        List<Ingredient> ingredients = new ArrayList<>();
+        while (rs2.next()) {
+            int idIngredient=rs2.getInt("id_ingredient");
+            PreparedStatement ps=conn.prepareStatement(sql);
+            ps.setInt(4, size);
+            ps.setInt(5, offset);
+            ps.setString(1, ingredientName);
+            ps.setString(2, category.name());
+            ps.setInt(3, idIngredient);
+            ResultSet rs= ps.executeQuery();
+            while (rs.next()) {
+                Ingredient ingredient = new Ingredient(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getDouble("price"),
+                        CategoryEnum.valueOf(rs.getString("category")),
+                        null
+                );
+                ingredients.add(ingredient);
+            }
+
+        }
+        return ingredients;
     }
 }

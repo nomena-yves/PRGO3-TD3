@@ -156,4 +156,9 @@ public class DataRetreiver {
             }
         return dishes;
     }
+    List<Ingredient> findIngredientByCretaria(String ingredientName,CategoryEnum category,String NameDish,int page,int size) throws SQLException {
+        Connection conn = db.getConnection();
+        int offset = (page - 1) * size;
+        String sql=" select d.id,d.name,d.price,d.dish_type from dish d inner join ingredient i where i.name=? and i.category=? and d.id=? limit ? offset ?";
+    }
 }

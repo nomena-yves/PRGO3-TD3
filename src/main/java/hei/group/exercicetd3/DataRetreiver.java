@@ -90,4 +90,41 @@ public class DataRetreiver {
         }
         return ingredients;
     }
+
+    public Dish saveDish(Dish dish) throws SQLException {
+        Connection conn = db.getConnection();
+        conn.setAutoCommit(false);
+        try{
+               String sqlSelect = "Select id from dish where name = ?";
+               PreparedStatement statementSelect = conn.prepareStatement(sqlSelect);
+                   statementSelect.setString(1, dish.getName());
+                   ResultSet rs = statementSelect.executeQuery();
+                   if (rs.next()) {
+                       dish.setId(rs.getInt("id"));
+                        String sqlUpdate = "Update dish set name=?,dish_type=?,price=? WHERE id = ?";
+                        PreparedStatement statement3 = conn.prepareStatement(sqlUpdate);
+                        statement3.setString(1, dish.getName());
+                        statement3.setObject(2, dish.getDishType().toString(), java.sql.Types.OTHER);
+                        statement3.setInt(3, dish.getId());
+                        statement3.setObject(4,dish.getPrice());
+                        statement3.executeUpdate();
+                       System.out.println("Dish updated");
+                   }else {
+                        int ingredientId= rs.getInt("id");
+                         String sqlInsert = "Insert into dish(id,name,dish_type,price=?) values(?,?,?)";
+                         PreparedStatement statementInsert = conn.prepareStatement(sqlInsert);
+                         statementInsert.setInt(1, dish.getId());
+                         statementInsert.setString(2, dish.getName());
+                           statementInsert.setObject(3, dish.getDishType().toString(), java.sql.Types.OTHER);
+                           statementInsert.setDouble(4, dish.getPrice());
+                           statementInsert.executeUpdate();
+                       System.out.println("Dish inserted");
+                   }
+                   conn.commit();
+        }catch(SQLException e){
+            conn.rollback();
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
 }

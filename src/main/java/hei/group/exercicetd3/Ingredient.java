@@ -72,7 +72,7 @@ public class Ingredient {
                 ", name='" + name + '\'' +
                 ", price=" + price +
                 ", category=" + category +
-                ", dish=" + dish +
+                ", dish=" + dish.getName() +
                 '}';
     }
 

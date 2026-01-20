@@ -64,7 +64,7 @@ public class Dish {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", dishType=" + dishType +
-                ", ingredients=" + ingredients +
+                ", ingredients="  + ingredients +
                 ", price=" + price +
                 '}';
     }

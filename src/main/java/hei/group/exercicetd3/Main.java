@@ -4,11 +4,13 @@ import java.sql.SQLException;
 
 public class Main {
     public static void main(String[] args) {
-        DataRetreiver d = new DataRetreiver();
+        DatabaseConnection db = new DatabaseConnection();
+        DataRetreiver d = new DataRetreiver(db);
         try{
-            System.out.println(d.findDishById(1));
+            //System.out.println(d.findDishById(1));
+            System.out.println(d.findByIngredient(2,3));
         }catch(SQLException e){
-            System.out.println(e.getErrorCode());
+            System.out.println(e.getMessage());
         }
     }
 }

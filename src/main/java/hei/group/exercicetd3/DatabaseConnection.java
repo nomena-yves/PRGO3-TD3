@@ -9,10 +9,11 @@ import java.sql.SQLException;
 
 @Component
 public class DatabaseConnection {
-    @Value("${db.url}") String url;
-    @Value("${db.username}") String user;
-    @Value("${db.password}") String password;
+    private static final String URL =
+            "jdbc:postgresql://localhost:5432/mini_dish_db";
+    private static final String USER = "mini_dish_manager";
+    private static final String PASSWORD = "harena";
    public Connection getConnection() throws SQLException {
-       return DriverManager.getConnection(url,user,password);
+       return DriverManager.getConnection(URL,USER,PASSWORD);
    }
 }

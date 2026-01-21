@@ -105,13 +105,37 @@ public class DataRetreiver {
                         PreparedStatement statement3 = conn.prepareStatement(sqlUpdate);
                         statement3.setString(1, dish.getName());
                         statement3.setObject(2, dish.getDishType().toString(), java.sql.Types.OTHER);
-                        statement3.setInt(3, dish.getId());
-                        statement3.setObject(4,dish.getPrice());
+                        statement3.setDouble(3,dish.getPrice());
+                        statement3.setInt(4,dish.getId());
                         statement3.executeUpdate();
+
+                        for (Ingredient ingredient : dish.getIngredients()) {
+                           sqlUpdate = "update ingredient set name=?,price=?,category=? where id = ?";
+                            PreparedStatement statement4 = conn.prepareStatement(sqlUpdate);
+                            statement4.setString(1, dish.getName());
+                            ResultSet rs4 = statement4.executeQuery();
+                            while (rs4.next()) {
+                              statement4.setString(1, dish.getName());
+                                statement4.setDouble(2,dish.getPrice());
+                              statement4.setObject(3, dish.getDishType().toString(), java.sql.Types.OTHER);
+                              statement4.setInt(4,dish.getId());
+                              statement4.executeUpdate();
+
+                            }
+                        }
                        System.out.println("Dish updated");
                    }else {
-                        int ingredientId= rs.getInt("id");
-                         String sqlInsert = "Insert into dish(id,name,dish_type,price=?) values(?,?,?)";
+                       for (Ingredient ingredient : dish.getIngredients()) {
+                           String sqlInsertIngredient="Insert into ingredient(id,name,price,category) values(?,?,?,?)";
+                           PreparedStatement statementInsert = conn.prepareStatement(sqlInsertIngredient);
+                           statementInsert.setInt(1, ingredient.getId());
+                           statementInsert.setString(2, ingredient.getName());
+                           statementInsert.setDouble(3, ingredient.getPrice());
+                           statementInsert.setObject(4, ingredient.getCategory().toString(), java.sql.Types.OTHER);
+                           statementInsert.executeUpdate();
+
+                       }
+                         String sqlInsert = "Insert into dish(id,name,dish_type,price) values(?,?,?,?)";
                          PreparedStatement statementInsert = conn.prepareStatement(sqlInsert);
                          statementInsert.setInt(1, dish.getId());
                          statementInsert.setString(2, dish.getName());

@@ -5,15 +5,17 @@ import java.util.Objects;
 
 public class DishIngredient {
     private Integer id;
-    private  int IdDish;
-    private int IdIngredient;
+    private Dish dish;
+    private Ingredient ingredient;
     private BigDecimal quantity_requierd;
+    private UnitType unit;
 
-    public DishIngredient(Integer id, int idDish, int idIngredient, BigDecimal quantity_requierd) {
+    public DishIngredient(Integer id, Dish dish, Ingredient ingredient, BigDecimal quantity_requierd, UnitType unit) {
         this.id = id;
-        IdDish = idDish;
-        IdIngredient = idIngredient;
+        this.dish = dish;
+        this.ingredient = ingredient;
         this.quantity_requierd = quantity_requierd;
+        this.unit = unit;
     }
 
     public Integer getId() {
@@ -24,20 +26,20 @@ public class DishIngredient {
         this.id = id;
     }
 
-    public int getIdDish() {
-        return IdDish;
+    public Dish getDish() {
+        return dish;
     }
 
-    public void setIdDish(int idDish) {
-        IdDish = idDish;
+    public void setDish(Dish dish) {
+        this.dish = dish;
     }
 
-    public int getIdIngredient() {
-        return IdIngredient;
+    public Ingredient getIngredient() {
+        return ingredient;
     }
 
-    public void setIdIngredient(int idIngredient) {
-        IdIngredient = idIngredient;
+    public void setIngredient(Ingredient ingredient) {
+        this.ingredient = ingredient;
     }
 
     public BigDecimal getQuantity_requierd() {
@@ -48,25 +50,24 @@ public class DishIngredient {
         this.quantity_requierd = quantity_requierd;
     }
 
+    public UnitType getUnit() {
+        return unit;
+    }
+
+    public void setUnit(UnitType unit) {
+        this.unit = unit;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         DishIngredient that = (DishIngredient) o;
-        return IdDish == that.IdDish && IdIngredient == that.IdIngredient && Objects.equals(id, that.id) && Objects.equals(quantity_requierd, that.quantity_requierd);
+        return Objects.equals(id, that.id) && Objects.equals(dish, that.dish) && Objects.equals(ingredient, that.ingredient) && Objects.equals(quantity_requierd, that.quantity_requierd) && unit == that.unit;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, IdDish, IdIngredient, quantity_requierd);
+        return Objects.hash(id, dish, ingredient, quantity_requierd, unit);
     }
 
-    @Override
-    public String toString() {
-        return "DishIngredient{" +
-                "id=" + id +
-                ", IdDish=" + IdDish +
-                ", IdIngredient=" + IdIngredient +
-                ", quantity_requierd=" + quantity_requierd +
-                '}';
-    }
 }

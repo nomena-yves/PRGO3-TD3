@@ -21,3 +21,16 @@ insert into dishIngredient (id,id_dish,id_ingredient,quantity_required,uniti) va
                                         (3,2,3,1.00,'KG'),
                                         (4,4,4,0.30,'KG'),
                                         (5,4,5,0.20,'KG');
+
+create type mouvement_type as enum('IN','OUT');
+
+Create table stockMouvement(
+    id serial primary key,
+    name varchar,
+    quantitiy numeric,
+    type mouvement_type,
+    unity uniti_type,
+    creation_dateTime timestamp,
+    id_ingredient int,
+    CONSTRAINT fk_stock foreign key (id_ingredient) references ingredient(id)
+);

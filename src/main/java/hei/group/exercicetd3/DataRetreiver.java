@@ -91,6 +91,39 @@ public class DataRetreiver {
         return ingredients;
     }
 
+    void attachement(Connection conn, Integer dishId, List<DishIngredient> dishingredients) throws SQLException {
+        if(dishingredients==null||dishingredients.isEmpty()){
+            return;
+        }
+        String sqlattInsert="insert into dishIngredient(id,dish_id,id_ingredient,quantity_required,uniti) values(?,?,?,?,?)";
+        String sqlattUpdate="Update dishIngredient set id_dish=?,id_ingredient=?,quantity_required=?,uniti=? where id=? ";
+        String selectdish="select id, id_dish from dishIngredient where id_dish=?";
+        PreparedStatement statemenSelect = conn.prepareStatement(selectdish);
+        statemenSelect.setInt(1, dishId);
+        ResultSet rs = statemenSelect.executeQuery();
+        if(rs.next()) {
+            for (DishIngredient dishIngredient:dishingredients){
+                int idDishIngredient=rs.getInt("id");
+                PreparedStatement statementUpdate = conn.prepareStatement(sqlattUpdate);
+                statementUpdate.setInt(1, idDishIngredient);
+                statementUpdate.setInt(2, dishId);
+                statementUpdate.setObject(3,dishIngredient.getQuantity_requierd());
+                statementUpdate.setObject(4,dishIngredient.getUnit());
+                statemenSelect.executeUpdate();
+            }
+        }else{
+            for (DishIngredient dishIngredient:dishingredients){
+                PreparedStatement preparedStatement = conn.prepareStatement(sqlattInsert);
+                preparedStatement.setInt(1,dishIngredient.getId());
+                preparedStatement.setInt(2,dishId);
+                preparedStatement.setInt(3,dishIngredient.getIngredient().getId());
+                preparedStatement.setObject(4,dishIngredient.getQuantity_requierd());
+                preparedStatement.setObject(5,dishIngredient.getUnit());
+                preparedStatement.executeUpdate();
+            }
+        }
+
+    }
     public Dish saveDish(Dish dish) throws SQLException {
         Connection conn = db.getConnection();
         conn.setAutoCommit(false);
@@ -147,6 +180,8 @@ public class DataRetreiver {
         }
         return null;
     }
+
+
     List<Dish> findDishByIngredientName(String IngredientName) throws SQLException {
         List<Dish> dishes = new ArrayList<>();
             String sqlIngredient="select id from ingredient where name = ?";

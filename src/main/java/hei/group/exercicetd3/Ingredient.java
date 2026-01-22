@@ -1,5 +1,6 @@
 package hei.group.exercicetd3;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Ingredient {
@@ -7,7 +8,7 @@ public class Ingredient {
     private String name;
     private Double price;
     private CategoryEnum category;
-    private Dish dish;
+    private List<StockMouvement> stockMouvements;
 
     public Ingredient(Integer id, String name, Double price, CategoryEnum category,Dish dish) {
         this.id = id;

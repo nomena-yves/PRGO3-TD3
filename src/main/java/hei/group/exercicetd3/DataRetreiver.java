@@ -112,16 +112,11 @@ public class DataRetreiver {
                         for (Ingredient ingredient : dish.getIngredients()) {
                            sqlUpdate = "update ingredient set name=?,price=?,category=? where id = ?";
                             PreparedStatement statement4 = conn.prepareStatement(sqlUpdate);
-                            statement4.setString(1, dish.getName());
-                            ResultSet rs4 = statement4.executeQuery();
-                            while (rs4.next()) {
-                              statement4.setString(1, dish.getName());
-                                statement4.setDouble(2,dish.getPrice());
-                              statement4.setObject(3, dish.getDishType().toString(), java.sql.Types.OTHER);
-                              statement4.setInt(4,dish.getId());
-                              statement4.executeUpdate();
-
-                            }
+                            statement4.setString(1, ingredient.getName());
+                            statement4.setDouble(2,ingredient.getPrice());
+                            statement4.setObject(3,ingredient.getCategory().toString(),java.sql.Types.OTHER);
+                            statement4.setInt(4,ingredient.getId());
+                            int rs4=statement4.executeUpdate();
                         }
                        System.out.println("Dish updated");
                    }else {
@@ -142,6 +137,7 @@ public class DataRetreiver {
                            statementInsert.setObject(3, dish.getDishType().toString(), java.sql.Types.OTHER);
                            statementInsert.setDouble(4, dish.getPrice());
                            statementInsert.executeUpdate();
+
                        System.out.println("Dish inserted");
                    }
                    conn.commit();

@@ -11,16 +11,16 @@ public class Main {
         DatabaseConnection db = new DatabaseConnection();
         DataRetreiver d = new DataRetreiver(db);
         ArrayList<Ingredient> ingredients = new ArrayList<>();
-        Dish steakPorc=new Dish(9,"steak_porc",MAIN,ingredients,7000.00);
+        Dish steakPorc=new Dish(10,"porc",MAIN,ingredients,7000.00);
 
         Ingredient viande_Hacher= new Ingredient(6,"viande_hache",200.00,ANIMAL,steakPorc);
         ingredients.add(viande_Hacher);
         try{
             //System.out.println(d.findDishById(1));
             //System.out.println(d.findByIngredient(2,3));
-            System.out.println(d.saveDish(steakPorc));
+            //System.out.println(d.saveDish(steakPorc));
             //System.out.println(d.findDishByIngredientName("Chocolat"));
-            //System.out.println(d.findIngredientByCretaria("Tomate",VEGETABLE,"Salade fraiche",1,2));
+            System.out.println(d.findIngredientByCretaria("Tomate",VEGETABLE,"Salade fraiche",1,2));
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }

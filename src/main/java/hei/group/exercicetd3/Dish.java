@@ -83,12 +83,14 @@ public class Dish {
 
     public Double getDishCost(){
         Double priceTotal = 0.0;
-        if (ingredients == null) {
+        if (ingredients == null||) {
             priceTotal =null;
-        }else {
-            ingredients.stream().mapToDouble(Ingredient::getPrice)
-                    .sum();
+        }else if() {
+            for (Ingredient ingredient : ingredients) {
+        if(ingredient.getDish()=DishIngredient.class.)
+            }
         }
         return price;
     }
+
 }

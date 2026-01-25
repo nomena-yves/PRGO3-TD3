@@ -214,48 +214,41 @@ public class DataRetreiver {
     List<Ingredient> findIngredientByCretaria(String ingredientName,CategoryEnum category,String NameDish,int page,int size) throws SQLException {
         Connection conn = db.getConnection();
         int offset = (page - 1) * size;
-        String sql="select i.id,i.name,i.category,i.price from ingredient i inner join dishIngredient d on i.id=d.id_ingredient where i.name like ? and d.id_ingredient =? and category=?::ingredient_type limit ? offset ?";
-        String sql2="select di.id_ingredient from dish d inner join dishIngredient di on di.id_dish=d.id where d.id=?";
+        String sql="select i.id,i.name,i.category,i.price from ingredient i inner join dishIngredient d on i.id = d.id_ingredient where i.name = ? and i.category=? and d.id_dish=? limit ? offset ? ";
         String sqlDish="select id,name,dish_type,price from dish where name=?";
        ArrayList<Ingredient> ingredients = new ArrayList<>();
        Ingredient ingredient = null;
        Dish dish=null;
-        PreparedStatement ps = conn.prepareStatement(sqlDish);
-        ps.setString(1, ingredientName);
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-           int idDish= rs.getInt("id");
-           dish=new Dish(
+       PreparedStatement ps=conn.prepareStatement(sqlDish);
+       ps.setString(1, NameDish);
+       ResultSet rs=ps.executeQuery();
+       while (rs.next()) {
+          int idDish= rs.getInt("id");
+          dish=new Dish(
                    rs.getInt("id"),
-                   rs.getString("name"),
-                   DishTypeEnum.valueOf(rs.getString("dish_type")),
-                   null,
-                   rs.getDouble("price")
+                  rs.getString("name"),
+                  DishTypeEnum.valueOf(rs.getString("dish_type")),
+                  ingredients,
+                  rs.getDouble("price")
            );
-           PreparedStatement ps2 = conn.prepareStatement(sql2);
-           ps.setInt(1, idDish);
-           ResultSet rs2 = ps2.executeQuery();
-           while (rs2.next()) {
-              int idIngredient= rs2.getInt("id_ingredient");
-               PreparedStatement ps3 = conn.prepareStatement(sql);
-               ps3.setInt(1, idIngredient);
-               ResultSet rs3 = ps3.executeQuery();
-               while (rs3.next()) {
-                   ingredient =  new Ingredient(
-                           rs3.getInt("id"),
-                           rs3.getString("name"),
-                           rs3.getDouble("price"),
-                           CategoryEnum.valueOf(rs3.getString("category")),
-                           dish
-
-                   );
-
-               }
-               ingredients.add(ingredient);
-           }
-
-        }
-
-        return ingredients;
+          PreparedStatement ps2=conn.prepareStatement(sql);
+          ps2.setString(1, ingredientName);
+          ps2.setObject(2, category.toString(),java.sql.Types.OTHER);
+          ps2.setInt(3, idDish);
+          ps2.setInt(4, size);
+          ps2.setInt(5,offset);
+          ResultSet rs2 = ps2.executeQuery();
+          while (rs2.next()) {
+              ingredient = new Ingredient(
+                      rs2.getInt("id"),
+                      rs2.getString("name"),
+                      rs2.getDouble("price"),
+                      CategoryEnum.valueOf(rs2.getString("category")),
+                      dish
+              );
+              ingredients.add(ingredient);
+          }
+       }
+       return ingredients;
     }
 }

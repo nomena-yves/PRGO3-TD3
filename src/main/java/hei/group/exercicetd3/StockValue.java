@@ -5,5 +5,5 @@ import org.springframework.format.annotation.DurationFormat;
 
 public class StockValue {
     private Double quantity;
-    private DurationFormat.Unit
+   // private DurationFormat.Unit
 }

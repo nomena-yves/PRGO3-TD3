@@ -8,7 +8,8 @@ public class Ingredient {
     private String name;
     private Double price;
     private CategoryEnum category;
-    private List<StockMouvement> stockMouvements;
+    //private List<StockMouvement> stockMouvements;
+    private Dish dish;
 
     public Ingredient(Integer id, String name, Double price, CategoryEnum category,Dish dish) {
         this.id = id;
@@ -16,7 +17,16 @@ public class Ingredient {
         this.price = price;
         this.category = category;
         this.dish = dish;
+        //this.stockMouvements = stockMouvements;
     }
+
+    //public List<StockMouvement> getStockMouvements() {
+     //   return stockMouvements;
+   // }
+
+    //public void setStockMouvements(List<StockMouvement> stockMouvements) {
+     //   this.stockMouvements = stockMouvements;
+   // }
 
     public int getId() {
         return id;

@@ -81,16 +81,16 @@ public class Dish {
         return Objects.hash(id, name, dishType, ingredients, price);
     }
 
-    public Double getDishCost(){
-        Double priceTotal = 0.0;
-        if (ingredients == null||) {
-            priceTotal =null;
-        }else if() {
-            for (Ingredient ingredient : ingredients) {
-        if(ingredient.getDish()=DishIngredient.class.)
-            }
-        }
-        return price;
-    }
+    //public Double getDishCost(){
+       // Double priceTotal = 0.0;
+        //if (ingredients == null||) {
+          //  priceTotal =null;
+        //}else if() {
+          //  for (Ingredient ingredient : ingredients) {
+        //if(ingredient.getDish()=DishIngredient.class.)
+          //  }
+        //}
+       // return price;
+    //}
 
 }

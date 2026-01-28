@@ -47,3 +47,17 @@ create table dishOrder(
     CONSTRAINT fk_order foreign key (id_order) references orders(id),
     CONSTRAINT fk_dish foreign key (id_dish) references dish(id)
 )
+
+insert into stockMouvement(id,quantitiy,type,unity,creation_dateTime,id_ingredient) values
+(1, 5.0, 'IN', 'KG', '2024-01-05 08:00',1),
+(2, 0.2, 'OUT', 'KG', '2024-01-06 12:00',1),
+(3, 4.0, 'IN', 'KG', '2024-01-05 08:00',2),
+(4, 0.15, 'OUT', 'KG', '2024-01-06 12:00',2),
+(5, 10.0, 'IN', 'KG', '2024-01-04 09:00',3),
+(6, 1.0, 'OUT', 'KG', '2024-01-06 13:00',3),
+(7, 3.0, 'IN', 'KG', '2024-01-05 10:00',4),
+(8, 0.3, 'OUT', 'KG', '2024-01-06 14:00',4),
+(9, 2.5, 'IN', 'KG', '2024-01-05 10:00',5),
+(10, 0.2, 'OUT', 'KG', '2024-01-06 14:00',5);
+
+ALTER TABLE dishOrder add column quantity int not null;

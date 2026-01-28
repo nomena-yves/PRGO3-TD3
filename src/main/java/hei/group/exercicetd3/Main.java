@@ -13,7 +13,7 @@ public class Main {
         ArrayList<Ingredient> ingredients = new ArrayList<>();
         Dish steakPorc=new Dish(10,"porc",MAIN,ingredients,7000.00);
 
-        Ingredient viande_Hacher= new Ingredient(6,"viande_hache",200.00,ANIMAL,steakPorc);
+        Ingredient viande_Hacher= new Ingredient(6,"viande_hache",200.00,ANIMAL,);
         ingredients.add(viande_Hacher);
         try{
             //System.out.println(d.findDishById(1));

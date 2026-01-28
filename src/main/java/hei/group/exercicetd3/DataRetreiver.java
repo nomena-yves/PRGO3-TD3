@@ -247,6 +247,9 @@ public class DataRetreiver {
            psUpdate.setDouble(3,ingredient.getPrice());
            psUpdate.setInt(4,ingredient.getId());
            psUpdate.executeUpdate();
+            for (StockMouvement stockMouvement:ingredient.getStockMouvements()) {
+                insertStockMouvement(stockMouvement);
+            }
         }else {
             String sqlInsert="insert into ingredient (id,name,category,price values(?,?,?,?)";
             PreparedStatement psInsert=conn.prepareStatement(sqlInsert);
@@ -273,5 +276,10 @@ public class DataRetreiver {
         ps.setTimestamp(4, java.sql.Timestamp.from(stockMouvement.getCreateDateTime()));
                 ps.executeUpdate();
                 return stockMouvement;
+    }
+
+    public Order saveOrder(Order orderSave) throws SQLException {
+        Connection conn = db.getConnection();
+
     }
 }

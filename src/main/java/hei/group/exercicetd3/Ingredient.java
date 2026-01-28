@@ -101,14 +101,6 @@ public class Ingredient {
         return Objects.hash(id, name, price, category, dish);
     }
 
-    public Double getStockValueAt(Instant t) {
-        Double q=0.0;
-        List<StockMouvement> stockMouvements = new ArrayList<>();
-        for (StockMouvement stockMouvement: stockMouvements) {
-            if(stockMouvement.getValue().getQuantity()!=null && stockMouvement.getValue().getQuantity()>0) {
-                q+=stockMouvement.getValue().getQuantity();
-            }
-        }
-        return q;
-    }
+    public StockValue getStockValueAt(Instant t) {
+
     }

@@ -26,7 +26,6 @@ create type mouvement_type as enum('IN','OUT');
 
 Create table stockMouvement(
     id serial primary key,
-    name varchar,
     quantitiy numeric,
     type mouvement_type,
     unity uniti_type,
@@ -34,3 +33,17 @@ Create table stockMouvement(
     id_ingredient int,
     CONSTRAINT fk_stock foreign key (id_ingredient) references ingredient(id)
 );
+
+create table orders(
+    id serial primary key ,
+    reference varchar(150) not null ,
+    create_datetime TIMESTAMP not null
+);
+
+create table dishOrder(
+    id serial primary key ,
+    id_order int,
+    id_dish int,
+    CONSTRAINT fk_order foreign key (id_order) references orders(id),
+    CONSTRAINT fk_dish foreign key (id_dish) references dish(id)
+)

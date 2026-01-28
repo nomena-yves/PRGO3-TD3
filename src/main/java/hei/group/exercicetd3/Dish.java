@@ -87,6 +87,8 @@ public class Dish {
             for (DishIngredient dishIngredient : dishIngredients) {
                 dishCost+= dishIngredient.getIngredient().getPrice()*dishIngredient.getQuantity_requierd().doubleValue();
             }
+        }else{
+            return null;
         }
         return dishCost;
     }

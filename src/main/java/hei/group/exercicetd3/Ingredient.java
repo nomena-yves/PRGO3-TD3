@@ -3,7 +3,9 @@ package hei.group.exercicetd3;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Ingredient {
     private Integer id;
@@ -102,5 +104,20 @@ public class Ingredient {
     }
 
     public StockValue getStockValueAt(Instant t) {
+        Double quantityFinal=0.0;
+        if (stockMouvements == null) return null;
+        Map<UnitType, List<StockMouvement>> unitSet = stockMouvements.stream()
+                .collect(Collectors.groupingBy(stockMovement -> stockMovement.getValue().getUniti()));
+        if (unitSet.keySet().size() > 1) {
+            throw new RuntimeException("Multiple unit found and not handle for conversion");
+        }
+        Double quantityIN = stockMouvements.stream().filter(p -> p.getType().equals(MouvementTypeEnum.IN)).mapToDouble(p->p.getValue().getQuantity()).sum();
+        Double quantityOUt=stockMouvements.stream().filter(p ->  p.getType().equals(MouvementTypeEnum.OUT)).mapToDouble(p->p.getValue().getQuantity()).sum();
+            quantityFinal=quantityIN-quantityOUt;
 
+            StockValue stockValue= new StockValue();
+        stockValue.setQuantity(quantityFinal);
+        stockValue.setUniti(unitSet.keySet().stream().findFirst().get());
+            return stockValue;
+    }
     }

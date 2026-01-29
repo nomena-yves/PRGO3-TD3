@@ -2,10 +2,13 @@ package hei.group.exercicetd3;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.ArrayList;
 
 import static hei.group.exercicetd3.CategoryEnum.*;
 import static hei.group.exercicetd3.DishTypeEnum.MAIN;
+import static hei.group.exercicetd3.MouvementTypeEnum.OUT;
+import static hei.group.exercicetd3.UnitType.KG;
 
 public class Main {
     public static void main(String[] args) {
@@ -14,7 +17,9 @@ public class Main {
         ArrayList<DishIngredient> dishIngredients = new ArrayList<>();
         ArrayList<StockMouvement> stockMouvements = new ArrayList<>();
         Dish steakPorc=new Dish(10,"porc",MAIN,dishIngredients,7000.00);
-
+        StockValue St=new StockValue(2.0,KG);
+        StockMouvement entrer=new StockMouvement(12,St,OUT, Instant.now());
+        stockMouvements.add(entrer);
         Ingredient viandeHacheePorc = new Ingredient(
                 11,
                 "Viande hachée au porc",
@@ -24,7 +29,7 @@ public class Main {
                 stockMouvements
         );
 
-        Ingredient tomate = new Ingredient(
+        Ingredient carotte = new Ingredient(
                 12,
                 "carotte",
                 50.0,
@@ -40,13 +45,13 @@ public class Main {
                 steakPorc,
                 viande_Hacher,
                 new BigDecimal("0.5"),
-                UnitType.KG
+                KG
         );
 
         DishIngredient di2 = new DishIngredient(
                 12,
                 steakPorc,
-                tomate,
+                carotte,
                 new BigDecimal("2"),
                 UnitType.PIECE
         );
@@ -58,6 +63,7 @@ public class Main {
             System.out.println(d.saveDish(steakPorc));
             //System.out.println(d.findDishByIngredientName("Chocolat"));
             //System.out.println(d.findIngredientByCretaria("Tomate",VEGETABLE,"Salade fraiche",1,2));
+            System.out.println(d.saveIngredient(carotte));
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }

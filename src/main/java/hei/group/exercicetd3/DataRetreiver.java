@@ -1,5 +1,6 @@
 package hei.group.exercicetd3;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -273,6 +274,7 @@ public class DataRetreiver {
         Connection conn = db.getConnection();
         String sqlSelect="select id from ingredient where name = ?";
         PreparedStatement ps=conn.prepareStatement(sqlSelect);
+        ps.setString(1, ingredient.getName());
         ResultSet rs=ps.executeQuery();
         if(rs.next()){
            String sqlUpdate="update ingredient set name = ?,category=?,price=? where id=? ";
@@ -286,7 +288,7 @@ public class DataRetreiver {
                 insertStockMouvement(stockMouvement);
             }
         }else {
-            String sqlInsert="insert into ingredient (id,name,category,price values(?,?,?,?)";
+            String sqlInsert="insert into ingredient (id,name,category,price) values(?,?,?,?)";
             PreparedStatement psInsert=conn.prepareStatement(sqlInsert);
             psInsert.setInt(1, ingredient.getId());
             psInsert.setString(2, ingredient.getName());
@@ -303,18 +305,18 @@ public class DataRetreiver {
 
     public StockMouvement insertStockMouvement(StockMouvement stockMouvement) throws SQLException {
         Connection conn = db.getConnection();
-        String sql="insert into stockmouvement(id,quantity,type,unity,creation_datetime) values(?,?,?,?,?,?) ON CONFLICT (id) DO NOTHING";
+        String sql="insert into stockmouvement(id,quantitiy,type,unity,creation_datetime) values(?,?,?,?,?) ON CONFLICT (id) DO NOTHING";
         PreparedStatement ps=conn.prepareStatement(sql);
         ps.setInt(1, stockMouvement.getId());
-        ps.setObject(2,stockMouvement.getType(),java.sql.Types.OTHER);
-        ps.setObject(3,stockMouvement.getValue().getUniti(),java.sql.Types.OTHER);
-        ps.setTimestamp(4, java.sql.Timestamp.from(stockMouvement.getCreateDateTime()));
+        ps.setBigDecimal(2, BigDecimal.valueOf(stockMouvement.getValue().getQuantity()));
+        ps.setObject(3,stockMouvement.getType(),java.sql.Types.OTHER);
+        ps.setObject(4,stockMouvement.getValue().getUniti(),java.sql.Types.OTHER);
+        ps.setTimestamp(5, java.sql.Timestamp.from(stockMouvement.getCreateDateTime()));
                 ps.executeUpdate();
                 return stockMouvement;
     }
-
-    //public Order saveOrder(Order orderSave) throws SQLException {
-    //    Connection conn = db.getConnection();
-    //String sql="";
-    //}
+    public Order saveOrder(Order orderSave) throws SQLException {
+        Connection conn = db.getConnection();
+    String sql="insert into orders (id,reference,";
+    }
 }

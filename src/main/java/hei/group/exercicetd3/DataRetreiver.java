@@ -23,7 +23,7 @@ public class DataRetreiver {
         DishIngredient dishIngredient = null;
         Connection conn = db.getConnection();
         String sql = "select d.id,d.name,d.dish_type,d.price,di.id_ingredient,di.id as id_dishIngredient,di.quantity_required,di.uniti from dish d inner join dishIngredient di on d.id=di.id_dish where d.id = ?";
-        String sql2="select i.id,i.name,i.category,i.price from ingredient where i.id = ?";
+        String sql2="select i.id,i.name,i.category,i.price from ingredient i where i.id = ?";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setInt(1, id);
         ResultSet rs = ps.executeQuery();
@@ -41,7 +41,7 @@ public class DataRetreiver {
                     dish,
                     ingredient,
                     rs.getBigDecimal("quantity_required"),
-                    UnitType.valueOf(rs.getString("unit"))
+                    UnitType.valueOf(rs.getString("uniti"))
             );
                 PreparedStatement ps2=conn.prepareStatement(sql2);
                 ps2.setInt(1,id_ingredient);
@@ -167,32 +167,32 @@ public class DataRetreiver {
                         }
                        System.out.println("Dish updated");
                    }else {
-                       for (DishIngredient dishingredient : dish.getDishIngredients()) {
-                           String sqlInsertIngredient="Insert into ingredient(id,name,price,category) values(?,?,?,?)";
-                           PreparedStatement statementInsert = conn.prepareStatement(sqlInsertIngredient);
-                           statementInsert.setInt(1, dishingredient.getIngredient().getId());
-                           statementInsert.setString(2, dishingredient.getIngredient().getName());
-                           statementInsert.setDouble(3, dishingredient.getIngredient().getPrice());
-                           statementInsert.setObject(4, dishingredient.getIngredient().getCategory().toString(), java.sql.Types.OTHER);
-                           statementInsert.executeUpdate();
-
-                       }
-                         String sqlInsert = "Insert into dish(id,name,dish_type,price) values(?,?,?,?)";
-                         PreparedStatement statementInsert = conn.prepareStatement(sqlInsert);
-                         statementInsert.setInt(1, dish.getId());
-                         statementInsert.setString(2, dish.getName());
-                           statementInsert.setObject(3, dish.getDishType().toString(), java.sql.Types.OTHER);
-                           statementInsert.setDouble(4, dish.getPrice());
-                           statementInsert.executeUpdate();
+                       String sqlInsert = "Insert into dish(id,name,dish_type,price) values(?,?,?,?)";
+                       PreparedStatement statementInsert = conn.prepareStatement(sqlInsert);
+                       statementInsert.setInt(1, dish.getId());
+                       statementInsert.setString(2, dish.getName());
+                       statementInsert.setObject(3, dish.getDishType().toString(), java.sql.Types.OTHER);
+                       statementInsert.setDouble(4, dish.getPrice());
+                       statementInsert.executeUpdate();
 
                        System.out.println("Dish inserted");
+                       for (DishIngredient dishingredient : dish.getDishIngredients()) {
+                           String sqlInsertIngredient="Insert into ingredient(id,name,price,category) values(?,?,?,?)";
+                           PreparedStatement statementInsertIngredient = conn.prepareStatement(sqlInsertIngredient);
+                           statementInsertIngredient.setInt(1, dishingredient.getIngredient().getId());
+                           statementInsertIngredient.setString(2, dishingredient.getIngredient().getName());
+                           statementInsertIngredient.setDouble(3, dishingredient.getIngredient().getPrice());
+                           statementInsertIngredient.setObject(4, dishingredient.getIngredient().getCategory().toString(), java.sql.Types.OTHER);
+                           statementInsertIngredient.executeUpdate();
+
+                       }
                    }
                    conn.commit();
         }catch(SQLException e){
             conn.rollback();
             System.out.println(e.getMessage());
         }
-        return null;
+        return dish;
     }
 
 
@@ -225,13 +225,48 @@ public class DataRetreiver {
             }
         return dishes;
     }
-    List<DishIngredient> findIngredientByCretaria(String ingredientName,CategoryEnum category,String NameDish,int page,int size) throws SQLException {
+    List<Ingredient> findIngredientByCretaria(String ingredientName,CategoryEnum category,String NameDish,int page,int size) throws SQLException {
         Connection conn = db.getConnection();
+        Dish dish=null;
+        Ingredient ingredient=null;
+        List<Ingredient> ingredients=new ArrayList<>();
+        List<DishIngredient> dishIngredients=new ArrayList<>();
+        List<StockMouvement> stockMouvements=new ArrayList<>();
         int offset = (page - 1) * size;
         String sql="select i.id,i.name,i.category,i.price from ingredient i inner join dishIngredient d on i.id = d.id_ingredient where i.name = ? and i.category=? and d.id_dish=? limit ? offset ? ";
         String sqlDish="select id,name,dish_type,price from dish where name=?";
-
-       return ;
+        PreparedStatement psDish=conn.prepareStatement(sqlDish);
+        psDish.setString(1, NameDish);
+        ResultSet rs=psDish.executeQuery();
+        while (rs.next()){
+            int idDish=rs.getInt("id");
+            dish =new Dish(
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    DishTypeEnum.valueOf(rs.getString("dish_type")),
+                    dishIngredients,
+                    rs.getDouble("price")
+            );
+            PreparedStatement ps=conn.prepareStatement(sql);
+            ps.setString(1, ingredientName);
+            ps.setObject(2, category.toString(),java.sql.Types.OTHER);
+            ps.setInt(3, idDish);
+            ps.setInt(4, size);
+            ps.setInt(5,offset);
+            ResultSet rs2=ps.executeQuery();
+            while (rs2.next()){
+                ingredient=new Ingredient(
+                        rs2.getInt("id"),
+                        rs2.getString("name"),
+                        rs2.getDouble("price"),
+                        CategoryEnum.valueOf(rs2.getString("category")),
+                        dish,
+                        stockMouvements
+                );
+            }
+            ingredients.add(ingredient);
+        }
+       return ingredients ;
     }
 
     public Ingredient saveIngredient(Ingredient ingredient) throws SQLException {
@@ -278,8 +313,8 @@ public class DataRetreiver {
                 return stockMouvement;
     }
 
-    public Order saveOrder(Order orderSave) throws SQLException {
-        Connection conn = db.getConnection();
-    String sql="";
-    }
+    //public Order saveOrder(Order orderSave) throws SQLException {
+    //    Connection conn = db.getConnection();
+    //String sql="";
+    //}
 }

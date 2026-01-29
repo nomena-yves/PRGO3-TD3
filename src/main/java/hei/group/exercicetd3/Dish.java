@@ -1,5 +1,6 @@
 package hei.group.exercicetd3;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,7 +15,7 @@ public class Dish {
         this.id = id;
         this.name = name;
         this.dishType = dishType;
-        this.dishIngredients = dishIngredients;
+        this.dishIngredients = new ArrayList<>();
         this.price = price;
     }
 

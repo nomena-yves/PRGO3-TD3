@@ -1,5 +1,7 @@
 package hei.group.exercicetd3;
 
+import org.springframework.data.relational.core.sql.In;
+
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -315,8 +317,77 @@ public class DataRetreiver {
                 ps.executeUpdate();
                 return stockMouvement;
     }
+
+    public Order findOrderByReference(String reference)throws SQLException{
+       Connection conn = db.getConnection();
+       Order order=null;
+       DishOrder dishOrder=null;
+       Dish dish=null;
+        List<DishIngredient> dishIngredients=new ArrayList<>();
+       List<DishOrder> orders=new ArrayList<>();
+       String sql="select o.id as idOrder,o.reference,o.create_datetime,d.id as dishOrder_id,d.id_order,d.id_dish,d.quantity from orders o inner join dishorder d  on o.id=d.id_order where reference=?";
+       String sql2="select id,name,dish_type,price from dish where id=?";
+       PreparedStatement ps=conn.prepareStatement(sql);
+       ps.setString(1, reference);
+       ResultSet rs=ps.executeQuery();
+       while (rs.next()){
+           int idDish=rs.getInt("dish_id");
+           order= new Order(
+                   rs.getInt("idOrder"),
+                   rs.getString("reference"),
+                    orders
+           );
+           PreparedStatement ps2=conn.prepareStatement(sql2);
+           ps2.setInt(1, idDish);
+           ResultSet rs2=ps2.executeQuery();
+           while (rs2.next()){
+               dish=new Dish(
+                       rs2.getInt("id"),
+                       rs2.getString("name"),
+                       DishTypeEnum.valueOf(rs2.getString("dish_type")),
+                       dishIngredients,
+                       rs2.getDouble("price")
+               );
+           }
+           dishOrder=new DishOrder(
+                   rs.getInt("dishOrder_id"),
+                   dish,
+                   rs.getInt("quantity")
+           );
+       }
+       orders.add(dishOrder);
+
+return order;
+    }
+
+    public Ingredient findIngredientById(Integer id)throws SQLException{
+        String sql="select id,name,category, price from ingredient where id=?";
+        Connection conn=db.getConnection();
+        Ingredient ingredient=null;
+        List<StockMouvement> stockMouvements=new ArrayList<>();
+        PreparedStatement ps=conn.prepareStatement(sql);
+        ps.setInt(1, id);
+        ResultSet rs=ps.executeQuery();
+        while (rs.next()){
+            ingredient=new Ingredient(
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getDouble("price"),
+                    CategoryEnum.valueOf(rs.getString("category")),
+
+            )
+        }
+
+    }
     public Order saveOrder(Order orderSave) throws SQLException {
         Connection conn = db.getConnection();
-    String sql="insert into orders (id,reference,";
+    String sql="insert into orders (id,reference,create_datetime)values(?,?,?)";
+    PreparedStatement ps=conn.prepareStatement(sql);
+    ps.setInt(1, orderSave.getId());
+    ps.setString(2,orderSave.getReferences());
+    ps.setTimestamp(3,orderSave.getDishOrders().stream().filter(p-));
+    ps.executeUpdate();
+
+
     }
 }

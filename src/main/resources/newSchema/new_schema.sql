@@ -61,3 +61,10 @@ insert into stockMouvement(id,quantitiy,type,unity,creation_dateTime,id_ingredie
 (10, 0.2, 'OUT', 'KG', '2024-01-06 14:00',5);
 
 ALTER TABLE dishOrder add column quantity int not null;
+
+create table Table_restaurant(
+    id int primary key not null,
+    numero_table int not null,
+    id_order int,
+    constraint fk_order foreign key (id_order) references orders(id)
+);

@@ -1,5 +1,6 @@
 package hei.group.exercicetd3;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -7,6 +8,9 @@ public class Order {
     private int id;
     private String references;
     private List<DishOrder> dishOrders;
+    private int id_table;
+    private Date date_installation;
+    private Date depart_client;
 
     public Order(int id, String references, List<DishOrder> dishOrders) {
         this.id = id;

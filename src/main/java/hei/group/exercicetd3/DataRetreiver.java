@@ -3,10 +3,8 @@ package hei.group.exercicetd3;
 import org.springframework.data.relational.core.sql.In;
 
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -323,40 +321,13 @@ public class DataRetreiver {
        Order order=null;
        DishOrder dishOrder=null;
        Dish dish=null;
+       Table table=null;
         List<DishIngredient> dishIngredients=new ArrayList<>();
        List<DishOrder> orders=new ArrayList<>();
-       String sql="select o.id as idOrder,o.reference,o.create_datetime,d.id as dishOrder_id,d.id_order,d.id_dish,d.quantity from orders o inner join dishorder d  on o.id=d.id_order where reference=?";
-       String sql2="select id,name,dish_type,price from dish where id=?";
-       PreparedStatement ps=conn.prepareStatement(sql);
-       ps.setString(1, reference);
-       ResultSet rs=ps.executeQuery();
-       while (rs.next()){
-           int idDish=rs.getInt("dish_id");
-           order= new Order(
-                   rs.getInt("idOrder"),
-                   rs.getString("reference"),
-                    orders
-           );
-           PreparedStatement ps2=conn.prepareStatement(sql2);
-           ps2.setInt(1, idDish);
-           ResultSet rs2=ps2.executeQuery();
-           while (rs2.next()){
-               dish=new Dish(
-                       rs2.getInt("id"),
-                       rs2.getString("name"),
-                       DishTypeEnum.valueOf(rs2.getString("dish_type")),
-                       dishIngredients,
-                       rs2.getDouble("price")
-               );
-           }
-           dishOrder=new DishOrder(
-                   rs.getInt("dishOrder_id"),
-                   dish,
-                   rs.getInt("quantity")
-           );
-       }
-       orders.add(dishOrder);
-
+       String sql="select d.id_dish,d.quantity from ordres o inner join dishorder d on o.id=d.id_order where reference=? ";
+       String sqlDish="select id,name,dish_type,price from dish where id=?";
+       PreparedStatement psDishorder=conn.prepareStatement(sql);
+       psDishorder.setString(1,reference);
 return order;
     }
 
@@ -364,6 +335,7 @@ return order;
         String sql="select id,name,category, price from ingredient where id=?";
         Connection conn=db.getConnection();
         Ingredient ingredient=null;
+        Dish dish=null;
         List<StockMouvement> stockMouvements=new ArrayList<>();
         PreparedStatement ps=conn.prepareStatement(sql);
         ps.setInt(1, id);
@@ -374,20 +346,46 @@ return order;
                     rs.getString("name"),
                     rs.getDouble("price"),
                     CategoryEnum.valueOf(rs.getString("category")),
-
-            )
+                    dish,
+                    stockMouvements
+            );
         }
-
+    return ingredient;
     }
     public Order saveOrder(Order orderSave) throws SQLException {
         Connection conn = db.getConnection();
     String sql="insert into orders (id,reference,create_datetime)values(?,?,?)";
+    String sqlDishOrder="insert into dishorder (id,id_order,id_dish,quantity) values(?,?,?,?)";
     PreparedStatement ps=conn.prepareStatement(sql);
     ps.setInt(1, orderSave.getId());
     ps.setString(2,orderSave.getReferences());
-    ps.setTimestamp(3,orderSave.getDishOrders().stream().filter(p-));
+    ps.setTimestamp(3,Timestamp.from(orderSave.getCreationDatetime()));
     ps.executeUpdate();
+        System.out.println("order insert");
+        return orderSave;
+    }
 
-
+    public StockValue getStockValueAt(Instant t,Integer ingredientIdentifier) throws SQLException{
+        Connection conn = db.getConnection();
+       StockValue stockValue=null;
+     String sql= """
+             SELECT unity,id_ingredient,SUM(CASE
+              WHEN type = 'OUT' THEN quantitiy * -1
+              ELSE quantitiy
+              END) AS quantity_total
+              FROM stockmouvement
+              WHERE creation_datetime >=?
+              GROUP BY unity, id_ingredient=?;""";
+     PreparedStatement ps=conn.prepareStatement(sql);
+     ps.setTimestamp(1, Timestamp.from(t));
+     ps.setInt(2, ingredientIdentifier);
+     ResultSet rs=ps.executeQuery();
+     if(rs.next()){
+        stockValue=new StockValue(
+                rs.getDouble("quantity_total"),
+                UnitType.valueOf(rs.getString("unity"))
+        );
+     }
+     return stockValue;
     }
 }

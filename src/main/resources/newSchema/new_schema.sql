@@ -68,3 +68,16 @@ create table Table_restaurant(
     id_order int,
     constraint fk_order foreign key (id_order) references orders(id)
 );
+
+Alter table Table_restaurant drop constraint if exists fk_order;
+Alter table Table_restaurant drop column if exists id_order;
+
+create table tableOrder(
+    id int primary key not null ,
+    dateInstallation TIMESTAMP not null ,
+    dateDepart TIMESTAMP not null,
+    id_table int,
+    id_order int,
+    constraint fk_table foreign key (id_table) references table_restaurant(id),
+    constraint  fk_order foreign key (id_order) references orders(id)
+);

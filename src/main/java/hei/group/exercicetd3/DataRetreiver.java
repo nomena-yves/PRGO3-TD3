@@ -62,6 +62,7 @@ public class DataRetreiver {
         }
         dishIngredients.add(dishIngredient);
 
+        conn.close();
         return dish;
     }
 
@@ -103,6 +104,7 @@ public class DataRetreiver {
 
 
         }
+        conn.close();
         return ingredients;
     }
 
@@ -193,6 +195,7 @@ public class DataRetreiver {
             conn.rollback();
             System.out.println(e.getMessage());
         }
+        conn.close();
         return dish;
     }
 
@@ -224,6 +227,7 @@ public class DataRetreiver {
                 }
                 return dishes;
             }
+        conn.close();
         return dishes;
     }
     List<Ingredient> findIngredientByCretaria(String ingredientName,CategoryEnum category,String NameDish,int page,int size) throws SQLException {
@@ -267,6 +271,7 @@ public class DataRetreiver {
             }
             ingredients.add(ingredient);
         }
+        conn.close();
        return ingredients ;
     }
 
@@ -299,7 +304,7 @@ public class DataRetreiver {
                insertStockMouvement(stockMouvement);
             }
         }
-
+        conn.close();
         return ingredient;
     }
 
@@ -350,6 +355,7 @@ return order;
                     stockMouvements
             );
         }
+        conn.close();
     return ingredient;
     }
     public Order saveOrder(Order orderSave) throws SQLException {
@@ -361,7 +367,15 @@ return order;
     ps.setString(2,orderSave.getReferences());
     ps.setTimestamp(3,Timestamp.from(orderSave.getCreationDatetime()));
     ps.executeUpdate();
+    PreparedStatement ps2=conn.prepareStatement(sqlDishOrder);
+    for (DishOrder d : orderSave.getDishOrders()) {
+        ps2.setInt(1, d.getId());
+        ps2.setInt(2, orderSave.getId());
+        ps2.setInt(3, d.getDish().getId());
+        ps2.setDouble(4, d.getQuantity());
+    }
         System.out.println("order insert");
+        conn.close();
         return orderSave;
     }
 
@@ -370,6 +384,7 @@ return order;
        StockValue stockValue=null;
      String sql= """
              SELECT unity,id_ingredient,SUM(CASE
+       
               WHEN type = 'OUT' THEN quantitiy * -1
               ELSE quantitiy
               END) AS quantity_total
@@ -386,6 +401,50 @@ return order;
                 UnitType.valueOf(rs.getString("unity"))
         );
      }
+        conn.close();
      return stockValue;
     }
+
+    public Double getDishCost(Integer dishId) throws SQLException{
+        Connection conn = db.getConnection();
+        Double dishCost=null;
+        Double ingredientQuantity=1.0;
+        int idIngredient;
+        String sql= """
+                select id_ingredient,quantity_required from dishIngredient where id_dish=?
+                """;
+        String sqlIngredient="select price from ingredient where id=?";
+        PreparedStatement ps=conn.prepareStatement(sql);
+        ps.setInt(1, dishId);
+        ResultSet rs=ps.executeQuery();
+        while(rs.next()){
+            idIngredient=rs.getInt("id_ingredient");
+            ingredientQuantity= ingredientQuantity*rs.getDouble("quantity_required");
+
+            PreparedStatement psIngredient=conn.prepareStatement(sqlIngredient);
+            psIngredient.setInt(1,idIngredient);
+            ResultSet rs2=psIngredient.executeQuery();
+            if(rs2.next()){
+                dishCost+=rs2.getDouble("price");
+            }
+        }
+        conn.close();
+        return dishCost*ingredientQuantity;
+    }
+
+    public Double getGrossMargint(Integer  dishId)throws SQLException{
+        Double marge=0.0;
+        Connection conn = db.getConnection();
+    String sql= """
+           select d.price - sum(di.quantity_required * i.price) as marge from dishIngredient di inner join dish d on di.id_dish=d.id inner join ingredient i on i.id=di.id_ingredient where d.id=? group by d.price;""";
+    PreparedStatement ps=conn.prepareStatement(sql);
+    ps.setInt(1, dishId);
+    ResultSet rs=ps.executeQuery();
+    if(rs.next()){
+        marge=rs.getDouble("marge");
+    }
+    conn.close();
+    return marge;
+    }
+
 }

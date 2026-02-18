@@ -447,4 +447,25 @@ return order;
     return marge;
     }
 
+    public  IngredientStockEvolution getIngredientStockEvolution(Timestamp starDate,Timestamp endDate) throws SQLException{
+        List<IngredientStockEvolution> ingredientStockEvolutions=new ArrayList<>();
+        IngredientStockEvolution ingredientStockEvolution=null;
+        Connection conn= db.getConnection();
+        String sql=" select i.id as idIngredient,i.name as nameIngredient,s.quantitiy,s.creation_datetime from ingredient i  inner join stockmouvement s on s.id_ingredient=i.id where s.creation_datetime between ? and ? group by i.id,s.creation_datetime,s.quantitiy,i.name;";
+         PreparedStatement ps=conn.prepareStatement(sql);
+            ps.setTimestamp(1,starDate);
+            ps.setTimestamp(2,endDate);
+            ResultSet rs=ps.executeQuery();
+            while(rs.next()){
+                ingredientStockEvolution= new IngredientStockEvolution(
+                        rs.getInt("idIngredient"),
+                        rs.getString("nameIngredient"),
+                        rs.getTimestamp("creation_datetime"),
+                        rs.getDouble("quantitiy")
+                );
+                ingredientStockEvolutions.add(ingredientStockEvolution);
+            }
+            conn.close();
+            return ingredientStockEvolution;
+    }
 }
